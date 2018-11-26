@@ -15,6 +15,7 @@ SerialPort::SerialPort(QObject *parent)
 
     connect(m_serialPort, &QSerialPort::readyRead, this, &SerialPort::handleReadyRead);
     connect(m_serialPort, &QSerialPort::errorOccurred, this, &SerialPort::handleError);
+    connect(&m_timer, &QTimer::timeout, this, &SerialPort::handleTimeout);
 
     if (m_serialPort->open(QIODevice::ReadWrite)) {
         qDebug() << "Porta aberta";
@@ -30,9 +31,27 @@ void SerialPort::handleReadyRead()
     if (arr.size()) {
         m_content.clear();
         m_content.append(arr);
-//        qDebug() << "Recebido " << arr << " copiado " << m_content;
+        //        qDebug() << "Recebido " << arr << " copiado " << m_content;
+
+        for (char i : arr) {
+            m_gps << i;
+        }
+
+        if (!m_timer.isActive()) {
+            m_timer.start(1500);
+        }
+
         emit received(arr);
     }
+}
+
+void SerialPort::handleTimeout()
+{
+    float latitude, longitude;
+
+    m_gps.f_get_position(&latitude, &longitude);
+    qDebug() << "Lat: " << latitude << " Long: " << longitude;
+    m_timer.stop();
 }
 
 void SerialPort::handleError(QSerialPort::SerialPortError serialPortError)

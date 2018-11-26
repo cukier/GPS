@@ -179,7 +179,7 @@ bool TinyGPS::term_complete()
         {
             if (m_gps_data_good)
             {
-#ifndef _GPS_NO_STATS
+#ifndef GPS_NO_STATS
                 ++m_good_sentences;
 #endif
                 m_last_time_fix = m_new_time_fix;
@@ -209,7 +209,7 @@ bool TinyGPS::term_complete()
             }
         }
 
-#ifndef _GPS_NO_STATS
+#ifndef GPS_NO_STATS
         else
             ++m_failed_checksum;
 #endif

@@ -3,6 +3,9 @@
 
 #include <QObject>
 #include <QSerialPort>
+#include <QTimer>
+
+#include "tinygps.h"
 
 class SerialPort : public QObject
 {
@@ -18,13 +21,15 @@ signals:
 
 private slots:
     void handleReadyRead();
-//    void handleTimeout();
+    void handleTimeout();
     void handleError(QSerialPort::SerialPortError serialPortError);
 
 private:
     QSerialPort *m_serialPort = nullptr;
 
+    QTimer m_timer;
     QByteArray m_content;
+    TinyGPS m_gps;
 };
 
 #endif // SERIALPORT_H
